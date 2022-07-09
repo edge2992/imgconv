@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+  "image/gif"
 
   "golang.org/x/image/tiff"
 )
@@ -21,6 +22,7 @@ const (
 	PNG
 	JPEG
   TIFF
+  GIF
 )
 
 // Stringは画像形式に対応する文字列を返す
@@ -32,6 +34,8 @@ func (f Format) String() string {
 		return "jpeg"
   case TIFF:
     return "tiff"
+  case GIF:
+    return "gif"
 	}
 	return "unkown"
 }
@@ -45,6 +49,8 @@ func (f *Format) Set(s string) error {
 		*f = JPEG
   case "tiff":
     *f = TIFF
+  case "gif":
+    *f = GIF
 	}
 	return image.ErrFormat
 }
@@ -58,6 +64,8 @@ func (f Format) Ext() string {
 		return ".jpeg"
   case TIFF:
     return ".tiff"
+  case GIF:
+    return ".gif"
 	}
 	return ""
 }
@@ -72,6 +80,8 @@ func FormatFromPath(path string) Format {
 		return JPEG
   case ".tiff":
     return TIFF
+  case ".gif":
+    return GIF
 	}
 	return Unkown
 }
@@ -97,6 +107,8 @@ func Encode(w io.Writer, img image.Image, f Format) error {
 		return jpeg.Encode(w, img, nil)
   case TIFF:
     return tiff.Encode(w, img, nil)
+  case GIF:
+    return gif.Encode(w, img, nil)
 	}
 	return image.ErrFormat
 }
@@ -116,6 +128,8 @@ func Decode(r io.Reader) (image.Image, Format, error) {
 		return img, JPEG, nil
   case "tiff":
     return img, TIFF, nil
+  case "gif":
+    return img, GIF, nil
 	}
 
 	return nil, Unkown, image.ErrFormat
